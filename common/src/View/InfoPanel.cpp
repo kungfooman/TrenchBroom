@@ -28,6 +28,8 @@
 #include "View/TabBook.h"
 
 #include <wx/sizer.h>
+#include <wx/splitter.h>
+#include <wx/textctrl.h>
 
 #include <cassert>
 
@@ -37,14 +39,33 @@ namespace TrenchBroom {
         wxPanel(parent),
         m_tabBook(nullptr),
         m_console(nullptr),
+        m_julia(nullptr),
+        m_splitterConsoleJulia(nullptr),
         m_issueBrowser(nullptr) {
             m_tabBook = new TabBook(this);
-            
+
+
+            //m_splitterConsoleJulia = new SplitterTab(m_tabBook);
+			
             m_console = new Console(m_tabBook);
+            //m_julia = new ConsoleInput(m_tabBook);
             m_issueBrowser = new IssueBrowser(m_tabBook, document);
             
+            
+
+
+			//m_splitterConsoleJulia->m_splitterWindow->SplitHorizontally(m_console, m_julia);
+
+            //m_tabBook->addPage(m_julia, "Julia");
             m_tabBook->addPage(m_console, "Console");
             m_tabBook->addPage(m_issueBrowser, "Issues");
+
+
+
+			m_splitterConsoleJulia = new SplitterTab(m_tabBook);
+
+			m_tabBook->addPage(m_splitterConsoleJulia, "Julia");
+
 
             wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
             sizer->Add(m_tabBook, 1, wxEXPAND);

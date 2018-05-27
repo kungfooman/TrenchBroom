@@ -24,6 +24,7 @@
 #include "Notifier.h"
 #include "Logger.h"
 #include "View/TabBook.h"
+#include <wx/splitter.h>
 
 class wxString;
 class wxTextCtrl;
@@ -40,6 +41,33 @@ namespace TrenchBroom {
             void doLog(LogLevel level, const wxString& message) override;
             void logToDebugOut(LogLevel level, const wxString& message);
             void logToConsole(LogLevel level, const wxString& message);
+        };
+    }
+}
+
+namespace TrenchBroom {
+    namespace View {
+        class ConsoleInput : public TabBookPage, public Logger {
+        private:
+            wxTextCtrl* m_textView;
+        public:
+            ConsoleInput(wxWindow* parent);
+        private:
+            void doLog(LogLevel level, const String& message) override;
+            void doLog(LogLevel level, const wxString& message) override;
+            void logToDebugOut(LogLevel level, const wxString& message);
+            void logToConsole(LogLevel level, const wxString& message);
+        };
+    }
+}
+
+namespace TrenchBroom {
+    namespace View {
+        class SplitterTab: public TabBookPage {
+        public:
+            wxSplitterWindow* m_splitterWindow;
+        public:
+            SplitterTab(wxWindow* parent);
         };
     }
 }

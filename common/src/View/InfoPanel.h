@@ -24,6 +24,8 @@
 
 #include <wx/bitmap.h>
 #include <wx/panel.h>
+#include <wx/splitter.h>
+#include "Console.h"
 
 class wxBookCtrlEvent;
 class wxButton;
@@ -43,7 +45,11 @@ namespace TrenchBroom {
         class InfoPanel : public wxPanel {
         private:
             TabBook* m_tabBook;
+
+			SplitterTab* m_splitterConsoleJulia;
             Console* m_console;
+            ConsoleInput* m_julia;
+
             IssueBrowser* m_issueBrowser;
         public:
             InfoPanel(wxWindow* parent, MapDocumentWPtr document);

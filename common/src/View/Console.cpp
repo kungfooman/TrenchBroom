@@ -40,6 +40,8 @@ namespace TrenchBroom {
             wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
             sizer->Add(m_textView, 1, wxEXPAND);
             SetSizer(sizer);
+
+			m_textView->SetEditable(true);
         }
 
         void Console::doLog(const LogLevel level, const String& message) {
@@ -85,6 +87,189 @@ namespace TrenchBroom {
                     m_textView->SetStyle(start, end, wxTextAttr(wxColor(250, 30, 60), m_textView->GetBackgroundColour()));
                     break;
             }
+        }
+    }
+}
+
+
+
+namespace TrenchBroom {
+    namespace View {
+        ConsoleInput::ConsoleInput(wxWindow* parent) :
+        TabBookPage(parent),
+        m_textView(new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP | wxTE_RICH2)) {
+			m_textView->SetFont(Fonts::fixedWidthFont());
+
+            wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+            sizer->Add(m_textView, 1, wxEXPAND);
+            SetSizer(sizer);
+
+			m_textView->SetEditable(true);
+        }
+
+        void ConsoleInput::doLog(const LogLevel level, const String& message) {
+            doLog(level, wxString(message));
+        }
+
+        void ConsoleInput::doLog(const LogLevel level, const wxString& message) {
+            if (!message.empty()) {
+                logToDebugOut(level, message);
+                logToConsole(level, message);
+                FileLogger::instance().log(level, message);
+            }
+        }
+
+        void ConsoleInput::logToDebugOut(const LogLevel level, const wxString& message) {
+            wxLogDebug(message);
+        }
+
+        void ConsoleInput::logToConsole(const LogLevel level, const wxString& message) {
+            if (m_textView->IsBeingDeleted()) return;
+                
+            wxWindowUpdateLocker locker(m_textView);
+
+            const long start = m_textView->GetLastPosition();
+            m_textView->AppendText(message);
+            m_textView->AppendText("\n");
+#ifndef __APPLE__
+			m_textView->ScrollLines(5);
+#endif
+            const long end = m_textView->GetLastPosition();
+
+            switch (level) {
+                case LogLevel_Debug:
+                    m_textView->SetStyle(start, end, wxTextAttr(Colors::disabledText(), m_textView->GetBackgroundColour()));
+                    break;
+                case LogLevel_Info:
+                    // m_textView->SetStyle(start, end, wxTextAttr(*wxBLACK, m_textView->GetBackgroundColour()));
+                    break;
+                case LogLevel_Warn:
+                    m_textView->SetStyle(start, end, wxTextAttr(Colors::defaultText(), m_textView->GetBackgroundColour()));
+                    break;
+                case LogLevel_Error:
+                    m_textView->SetStyle(start, end, wxTextAttr(wxColor(250, 30, 60), m_textView->GetBackgroundColour()));
+                    break;
+            }
+        }
+    }
+}
+
+
+class cSpecialTextCtrl : public wxTextCtrl
+{
+public:
+	///cSpecialTextCtrl (
+	///	wxWindow *parent, wxWindowID id,
+	///	const wxString& value = wxEmptyString,
+	///	const wxPoint& pos = wxDefaultPosition,
+	///	const wxSize& size = wxDefaultSize
+	///) {
+	///	super
+	///
+	///}
+
+	using wxTextCtrl::wxTextCtrl; // inherit constructors
+	
+	wxTextCtrl *outputTextControl;
+
+	void AddText(const wxString &message) {
+	
+            if (outputTextControl->IsBeingDeleted()) return;
+                
+            wxWindowUpdateLocker locker(outputTextControl);
+
+            const long start = outputTextControl->GetLastPosition();
+            outputTextControl->AppendText(message);
+            outputTextControl->AppendText("\n");
+#ifndef __APPLE__
+			outputTextControl->ScrollLines(5);
+#endif
+            //const long end = outputTextControl->GetLastPosition();
+            //switch (level) {
+            //    case LogLevel_Debug:
+            //        m_textView->SetStyle(start, end, wxTextAttr(Colors::disabledText(), m_textView->GetBackgroundColour()));
+            //        break;
+            //    case LogLevel_Info:
+            //        // m_textView->SetStyle(start, end, wxTextAttr(*wxBLACK, m_textView->GetBackgroundColour()));
+            //        break;
+            //    case LogLevel_Warn:
+            //        m_textView->SetStyle(start, end, wxTextAttr(Colors::defaultText(), m_textView->GetBackgroundColour()));
+            //        break;
+            //    case LogLevel_Error:
+            //        m_textView->SetStyle(start, end, wxTextAttr(wxColor(250, 30, 60), m_textView->GetBackgroundColour()));
+            //        break;
+            //}	
+	}
+  
+	void OnChar( wxKeyEvent& ev ) {
+		if (ev.ControlDown() && ev.m_keyCode == 13/*enter*/)
+			AddText("got ctrl+enter");
+		else
+			wxTextCtrl::OnChar(ev);
+	}
+
+	private:
+		DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE( cSpecialTextCtrl , wxTextCtrl)
+    EVT_KEY_DOWN( cSpecialTextCtrl ::OnChar)
+END_EVENT_TABLE()
+
+namespace TrenchBroom {
+    namespace View {
+        SplitterTab::SplitterTab(wxWindow* parent) :
+        TabBookPage(parent)//,
+        //m_textView(new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP | wxTE_RICH2))
+		{
+
+			//m_textView->SetFont(Fonts::fixedWidthFont());
+			
+			//m_splitterWindow = new wxSplitterWindow(parent, -1, wxPoint(0, 0), wxSize(400, 400), wxSP_3D);
+			//m_splitterWindow = new wxSplitterWindow(this, wxID_ANY);
+			//m_splitterWindow->SetMinimumPaneSize(50);
+
+            //wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+            //sizer->Add(m_splitterWindow, 1, wxEXPAND);
+            //SetSizer(sizer);
+
+			//m_textView->SetEditable(true);
+
+
+    // Create the wxSplitterWindow window
+    // and set a minimum pane size to prevent unsplitting
+    wxSplitterWindow* splitterWindow = new wxSplitterWindow(this, wxID_ANY);
+    splitterWindow->SetMinimumPaneSize(50);
+
+    // Create the left panel
+    wxPanel* panel1 = new wxPanel(splitterWindow, wxID_ANY);
+    wxTextCtrl* textCtrl1 = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor",
+        wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP);
+    wxBoxSizer* panel1Sizer = new wxBoxSizer(wxHORIZONTAL);
+    panel1Sizer->Add(textCtrl1, 1, wxEXPAND);
+    panel1->SetSizer(panel1Sizer);
+
+    // Create the right panel
+    wxPanel* panel2 = new wxPanel(splitterWindow, wxID_ANY);
+    cSpecialTextCtrl* textCtrl2 = new cSpecialTextCtrl(panel2, wxID_ANY, L"Panel 2 Text", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE |  wxTE_DONTWRAP );
+	textCtrl2->outputTextControl = textCtrl1;
+	textCtrl2->SetEditable(true);
+	//textCtrl2->SetEvtHandlerEnabled(false);
+
+    wxBoxSizer* panel2Sizer = new wxBoxSizer(wxHORIZONTAL);
+    panel2Sizer->Add(textCtrl2, 1, wxEXPAND);
+    panel2->SetSizer(panel2Sizer);
+	
+	
+    // Set up the sizer for the frame and resize the frame
+    // according to its contents
+    wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
+    topSizer->Add(splitterWindow, 1, wxEXPAND);
+    SetSizerAndFit(topSizer);
+	
+	// Split the window vertically and set the left and right panes
+    splitterWindow->SplitVertically(panel1, panel2, 1000 /* i dont know how to set 50/50, 1000 pixels is a nice guess */);
+
         }
     }
 }
