@@ -174,6 +174,78 @@ CCALL void juliaPrint(char *message) {
 	#endif
 }
 
+#include "Selection.h"
+#include "FrameManager.h"
+#include "TrenchBroomApp.h"
+#include "MapFrame.h"
+#include "MapDocument.h"
+#include "Model/Brush.h"
+
+// ripped from Brush.cpp
+#include "CollectionUtils.h"
+#include "Model/BrushContentTypeBuilder.h"
+#include "Model/BrushFace.h"
+#include "Model/BrushGeometry.h"
+#include "Model/BrushSnapshot.h"
+#include "Model/Entity.h"
+#include "Model/FindContainerVisitor.h"
+#include "Model/FindGroupVisitor.h"
+#include "Model/FindLayerVisitor.h"
+#include "Model/Group.h"
+#include "Model/IssueGenerator.h"
+#include "Model/NodeVisitor.h"
+#include "Model/PickResult.h"
+#include "Model/World.h"
+
+using namespace TrenchBroom::View;
+
+int print(char *format, ...) {
+	char *buf;
+	va_list args;
+	va_start (args, format);
+	
+	// the output can be enourmous, so instead of a static buffer, we first figure out the length needed and then just alloc that size
+	size_t needed = vsnprintf(NULL, 0, format, args);
+	needed += 1;
+	buf = (char *)malloc(needed);
+
+	if (buf == NULL) {
+		juliaPrint("failed to allocate memory for imgui_log()\n");
+		return -1;
+	}
+
+	vsnprintf(buf, needed, format, args);
+	va_end (args);
+
+	juliaPrint(buf);
+
+	free(buf);
+}
+
+// ccall( :testbrush, Void, ())
+CCALL void testbrush() {
+	
+	TrenchBroom::View::FrameManager *fm = TrenchBroom::View::TrenchBroomApp::instance().frameManager();
+	auto frames = fm->frames();
+
+	for (MapFrame *frame : frames) {
+		juliaPrint("frame\n");
+		auto brushes = frame->document()->selectedNodes().brushes();
+		for (auto brush : brushes) {
+			print("brush %d has faceCount=%d\n", brush, brush->faceCount());
+		}
+
+		
+	}
+
+	
+
+	//TrenchBroom_Selection::
+
+
+	//selectedNodes
+}
+
 class LibJulia {
 public:
 	static bool loaded;
