@@ -199,7 +199,7 @@ CCALL void juliaPrint(char *message) {
 
 using namespace TrenchBroom::View;
 
-int print(char *format, ...) {
+void print(char *format, ...) {
 	char *buf;
 	va_list args;
 	va_start (args, format);
@@ -211,7 +211,7 @@ int print(char *format, ...) {
 
 	if (buf == NULL) {
 		juliaPrint("failed to allocate memory for imgui_log()\n");
-		return -1;
+		return;
 	}
 
 	vsnprintf(buf, needed, format, args);
@@ -230,7 +230,7 @@ CCALL void testbrush() {
 
 	for (MapFrame *frame : frames) {
 		juliaPrint("frame\n");
-		auto brushes = frame->document()->selectedNodes().brushes();
+		auto &brushes = frame->document()->selectedNodes().brushes();
 		for (auto brush : brushes) {
 			print("brush %d has faceCount=%d\n", brush->id, brush->faceCount());
 		}
@@ -244,6 +244,44 @@ CCALL void testbrush() {
 
 
 	//selectedNodes
+}
+
+CCALL MapFrame *firstMapFrame() {
+	TrenchBroom::View::FrameManager *fm = TrenchBroom::View::TrenchBroomApp::instance().frameManager();
+	auto frames = fm->frames();
+	if (frames.size() == 0)
+		return NULL;
+	return frames.front();
+}
+
+CCALL int selectedBrushesCount() {
+	auto frame = firstMapFrame();
+	if (frame == NULL)
+		return -1;
+	return frame->document()->selectedNodes().brushCount();
+}
+
+// ffi_malloc(bytes) = ccall( :ffi_malloc, Ptr{Void}, (Int32,), bytes)
+CCALL void *ffi_malloc(int bytes) {
+	return malloc(bytes);
+}
+// ffi_free(ptr) = ccall(:ffi_free, Void, (Ptr{Void},) ptr)
+CCALL void ffi_free(void *ptr) {
+	free(ptr);
+}
+
+// ccall( :selectedBrushes, Ptr{Int}, ())
+CCALL int *selectedBrushes() {
+	auto frame = firstMapFrame();
+	if (frame == NULL)
+		return NULL;
+
+	int n = frame->document()->selectedNodes().brushCount();
+	int *ret = (int *)malloc(n * sizeof(int));
+	auto &brushes = frame->document()->selectedNodes().brushes();
+	for (int i=0; i<n; i++)
+		ret[i] = brushes[i]->id;
+	return ret;
 }
 
 class LibJulia {

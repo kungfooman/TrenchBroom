@@ -5,6 +5,7 @@ juliaPrint(text) = ccall( :juliaPrint, Void, (Cstring,), text)
 imgui_log = juliaPrint # just compatibility to my console.jl
 
 include("console.jl")
+include("brushes.jl")
 
 log(console, "Loading init.jl")
 
