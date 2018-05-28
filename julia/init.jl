@@ -6,20 +6,28 @@ imgui_log = juliaPrint # just compatibility to my console.jl
 
 include("console.jl")
 
-
-log(console, "haiiii!\n")
-log(console, "another haiiii!\n")
+log(console, "Loading init.jl")
 
 function Core.eval(code::AbstractString)
-	return eval(parse(code))
+	#return eval(parse(code)) # shitty substitute for linux, because jl_parse_eval_all isnt available for some reason
+	bstr = String(code)
+	ret = nothing
+	try
+		ret = ccall(:jl_parse_eval_all, Any, (Cstring, Cstring, Csize_t), "hurr.jl", bstr, sizeof(bstr))
+	catch ex
+		#print("Got error: " * string(ex.error.msg) * "\n")
+		return ex
+	end
+	return ret	
 end
 
 local ans
-function bla(code::AbstractString)
+
+function eval_and_prettyprint(code::AbstractString)
 	try
 		ans = eval(code)
-		juliaPrint(string(ans))
+		log(console, ans)
 	catch ex
-		juliaPrint(string(ex))
+		log(console, ex)
 	end
 end

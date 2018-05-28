@@ -174,68 +174,78 @@ CCALL void juliaPrint(char *message) {
 	#endif
 }
 
-class cSpecialTextCtrl : public wxTextCtrl
-{
+class LibJulia {
 public:
-	///cSpecialTextCtrl (
-	///	wxWindow *parent, wxWindowID id,
-	///	const wxString& value = wxEmptyString,
-	///	const wxPoint& pos = wxDefaultPosition,
-	///	const wxSize& size = wxDefaultSize
-	///) {
-	///	super
-	///
-	///}
-
-	using wxTextCtrl::wxTextCtrl; // inherit constructors
-	
-	wxTextCtrl *outputTextControl;
-	bool isJuliaLoaded = false;
-
+	static bool loaded;
 	typedef void  (*jl_init_t       )(               );
 	typedef int  *(*jl_eval_string_t)(const char *str);
-	jl_init_t jl_init_addr;
-	jl_eval_string_t jl_eval_string_addr;
+	static jl_init_t        jl_init_addr;
+	static jl_eval_string_t jl_eval_string_addr;
+
+	static bool InitIfNot() {
+		if (loaded == true)
+			return true;
+		char currentDir[512];
+		_getcwd(currentDir, sizeof(currentDir));
+		//printf("currentDir=%s\n", currentDir);
+		_chdir("C:\\julia_32bit\\bin");
+		HMODULE libjulia = LoadLibraryA("C:\\julia_32bit\\bin\\libjulia.dll");
+		if (libjulia == NULL) {
+			//juliaPrint("libjulia == NULL\n");
+			return false;
+		}
+		jl_init_addr        = (jl_init_t       )GetProcAddress(libjulia, "jl_init");
+		jl_eval_string_addr = (jl_eval_string_t)GetProcAddress(libjulia, "jl_eval_string");
+		if (!jl_init_addr)
+			return false;
+		if (!jl_eval_string_addr)
+			return false;
+		jl_init_addr();
+		jl_eval_string_addr("include(\"g:/trenchbroom/julia/init.jl\")");
+		loaded = true;
+		return true;
+	}
+
+	static bool Eval(const char *code) {	
+		if ( ! InitIfNot())
+			return false;
+		jl_eval_string_addr(code);
+		return true;
+	}
+
+	static bool Include(const char *filename) {
+		if ( ! InitIfNot())
+			return false;
+		char tmp[512];
+		snprintf(tmp, sizeof(tmp), "include(\"%s\")", filename);
+		jl_eval_string_addr(tmp);
+		return true;
+	}
+};
+
+bool LibJulia::loaded = false;
+LibJulia::jl_init_t LibJulia::jl_init_addr = NULL;
+LibJulia::jl_eval_string_t LibJulia::jl_eval_string_addr = NULL;
+
+class cSpecialTextCtrl : public wxTextCtrl {
+public:
+	using wxTextCtrl::wxTextCtrl; // inherit constructors
+	wxTextCtrl *outputTextControl;
+
 	void OnChar( wxKeyEvent& ev ) {
-		if (ev.ControlDown() && ev.m_keyCode == 13/*enter*/) {
-			
-			if (isJuliaLoaded == false) {
-				char currentDir[512];
-				_getcwd(currentDir, sizeof(currentDir));
-				printf("currentDir=%s\n", currentDir);
-
-				_chdir("C:\\julia_32bit\\bin");
-				HMODULE libjulia = LoadLibraryA("C:\\julia_32bit\\bin\\libjulia.dll");
-
-				if (libjulia == NULL) {
-					juliaPrint("libjulia == NULL\n");
-					return;
-				}
-
-				jl_init_addr        = (jl_init_t       )GetProcAddress(libjulia, "jl_init");
-				jl_eval_string_addr = (jl_eval_string_t)GetProcAddress(libjulia, "jl_eval_string");				
-
-				if (!jl_init_addr)
-					return;
-				if (!jl_eval_string_addr)
-					return;
-
-				jl_init_addr();
-				jl_eval_string_addr("include(\"g:/trenchbroom/julia/init.jl\")");
-				isJuliaLoaded = true;
-			}
-
+		if (ev.ControlDown() && ev.m_keyCode == 'R') {
+			LibJulia::Include("g:/trenchbroom/julia/init.jl");
+			//juliaPrint("ctrl+r\n");
+		} else if (ev.ControlDown() && ev.m_keyCode == 13/*enter*/) {
 			wxString text;
 			if (HasSelection()) {
 				text = GetStringSelection().Clone();
 			} else {
 				text = GetValue().Clone();
 			}
-
 			text.Replace("\"", "\\\"");
-			text = "bla(\"" + text + "\")";
-			if (jl_eval_string_addr)
-				jl_eval_string_addr(text.c_str());
+			text = "eval_and_prettyprint(\"" + text + "\")";
+			LibJulia::Eval(text.c_str());
 		} else {
 			wxTextCtrl::OnChar(ev);
 		}
@@ -276,7 +286,7 @@ namespace TrenchBroom {
 
     // Create the left panel
     wxPanel* panel1 = new wxPanel(splitterWindow, wxID_ANY);
-    juliaTextWidgetOutput = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP);
+    juliaTextWidgetOutput = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor\n", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP);
 	juliaTextWidgetOutput->SetFont( wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
     wxBoxSizer* panel1Sizer = new wxBoxSizer(wxHORIZONTAL);
     panel1Sizer->Add(juliaTextWidgetOutput, 1, wxEXPAND);
@@ -284,7 +294,7 @@ namespace TrenchBroom {
 
     // Create the right panel
     wxPanel* panel2 = new wxPanel(splitterWindow, wxID_ANY);
-    cSpecialTextCtrl* textCtrl2 = new cSpecialTextCtrl(panel2, wxID_ANY, L"Panel 2 Text", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE |  wxTE_DONTWRAP );
+    cSpecialTextCtrl* textCtrl2 = new cSpecialTextCtrl(panel2, wxID_ANY, L"for i in 10:20\n\tlog(console, i)\nend", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE |  wxTE_DONTWRAP);
 	textCtrl2->SetFont( wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
 	textCtrl2->outputTextControl = juliaTextWidgetOutput;
 	textCtrl2->SetEditable(true);
