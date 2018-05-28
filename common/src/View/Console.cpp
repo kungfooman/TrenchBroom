@@ -286,7 +286,7 @@ namespace TrenchBroom {
 
     // Create the left panel
     wxPanel* panel1 = new wxPanel(splitterWindow, wxID_ANY);
-    juliaTextWidgetOutput = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor\n", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP);
+    juliaTextWidgetOutput = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor\n", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP | wxTE_PROCESS_TAB);
 	juliaTextWidgetOutput->SetFont( wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
     wxBoxSizer* panel1Sizer = new wxBoxSizer(wxHORIZONTAL);
     panel1Sizer->Add(juliaTextWidgetOutput, 1, wxEXPAND);
@@ -294,7 +294,7 @@ namespace TrenchBroom {
 
     // Create the right panel
     wxPanel* panel2 = new wxPanel(splitterWindow, wxID_ANY);
-    cSpecialTextCtrl* textCtrl2 = new cSpecialTextCtrl(panel2, wxID_ANY, L"for i in 10:20\n\tlog(console, i)\nend", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE |  wxTE_DONTWRAP);
+    cSpecialTextCtrl* textCtrl2 = new cSpecialTextCtrl(panel2, wxID_ANY, L"for i in 10:20\n\tlog(console, i)\nend", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE |  wxTE_DONTWRAP | wxTE_PROCESS_TAB);
 	textCtrl2->SetFont( wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
 	textCtrl2->outputTextControl = juliaTextWidgetOutput;
 	textCtrl2->SetEditable(true);
