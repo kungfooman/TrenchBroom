@@ -1,13 +1,20 @@
+importall Base
+
 juliaPrint(text) = ccall( :juliaPrint, Void, (Cstring,), text)
 
-juliaPrint("haiiii!")
+imgui_log = juliaPrint # just compatibility to my console.jl
 
-local ans
+include("console.jl")
+
+
+log(console, "haiiii!\n")
+log(console, "another haiiii!\n")
 
 function Core.eval(code::AbstractString)
 	return eval(parse(code))
 end
 
+local ans
 function bla(code::AbstractString)
 	try
 		ans = eval(code)

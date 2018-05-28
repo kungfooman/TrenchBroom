@@ -166,12 +166,9 @@ CCALL void juliaPrint(char *message) {
 	if (juliaTextWidgetOutput == NULL)
 		return;
 	if (juliaTextWidgetOutput->IsBeingDeleted()) return;
-                
 	wxWindowUpdateLocker locker(juliaTextWidgetOutput);
-
 	const long start = juliaTextWidgetOutput->GetLastPosition();
 	juliaTextWidgetOutput->AppendText(message);
-	juliaTextWidgetOutput->AppendText("\n");
 	#ifndef __APPLE__
 	juliaTextWidgetOutput->ScrollLines(5);
 	#endif
@@ -195,35 +192,6 @@ public:
 	wxTextCtrl *outputTextControl;
 	bool isJuliaLoaded = false;
 
-	void AddText(const wxString &message) {
-	
-            if (outputTextControl->IsBeingDeleted()) return;
-                
-            wxWindowUpdateLocker locker(outputTextControl);
-
-            const long start = outputTextControl->GetLastPosition();
-            outputTextControl->AppendText(message);
-            outputTextControl->AppendText("\n");
-#ifndef __APPLE__
-			outputTextControl->ScrollLines(5);
-#endif
-            //const long end = outputTextControl->GetLastPosition();
-            //switch (level) {
-            //    case LogLevel_Debug:
-            //        m_textView->SetStyle(start, end, wxTextAttr(Colors::disabledText(), m_textView->GetBackgroundColour()));
-            //        break;
-            //    case LogLevel_Info:
-            //        // m_textView->SetStyle(start, end, wxTextAttr(*wxBLACK, m_textView->GetBackgroundColour()));
-            //        break;
-            //    case LogLevel_Warn:
-            //        m_textView->SetStyle(start, end, wxTextAttr(Colors::defaultText(), m_textView->GetBackgroundColour()));
-            //        break;
-            //    case LogLevel_Error:
-            //        m_textView->SetStyle(start, end, wxTextAttr(wxColor(250, 30, 60), m_textView->GetBackgroundColour()));
-            //        break;
-            //}	
-	}
-  
 	typedef void  (*jl_init_t       )(               );
 	typedef int  *(*jl_eval_string_t)(const char *str);
 	jl_init_t jl_init_addr;
@@ -240,7 +208,7 @@ public:
 				HMODULE libjulia = LoadLibraryA("C:\\julia_32bit\\bin\\libjulia.dll");
 
 				if (libjulia == NULL) {
-					AddText("libjulia == NULL");
+					juliaPrint("libjulia == NULL\n");
 					return;
 				}
 
@@ -308,8 +276,8 @@ namespace TrenchBroom {
 
     // Create the left panel
     wxPanel* panel1 = new wxPanel(splitterWindow, wxID_ANY);
-    juliaTextWidgetOutput = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor",
-        wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP);
+    juliaTextWidgetOutput = new wxTextCtrl(panel1, wxID_ANY, L"Enter commands on the right\nCtrl+enter = execute all\nCtrl+enter with selection = execute selection\nAlt+enter = execute line of start cursor", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE | wxTE_DONTWRAP);
+	juliaTextWidgetOutput->SetFont( wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
     wxBoxSizer* panel1Sizer = new wxBoxSizer(wxHORIZONTAL);
     panel1Sizer->Add(juliaTextWidgetOutput, 1, wxEXPAND);
     panel1->SetSizer(panel1Sizer);
@@ -317,6 +285,7 @@ namespace TrenchBroom {
     // Create the right panel
     wxPanel* panel2 = new wxPanel(splitterWindow, wxID_ANY);
     cSpecialTextCtrl* textCtrl2 = new cSpecialTextCtrl(panel2, wxID_ANY, L"Panel 2 Text", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTE_MULTILINE |  wxTE_DONTWRAP );
+	textCtrl2->SetFont( wxFont(10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL) );
 	textCtrl2->outputTextControl = juliaTextWidgetOutput;
 	textCtrl2->SetEditable(true);
 	//textCtrl2->SetEvtHandlerEnabled(false);
