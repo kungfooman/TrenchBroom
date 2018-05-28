@@ -34,6 +34,11 @@
 #include "Model/PickResult.h"
 #include "Model/World.h"
 
+#include <Windows.h>
+
+int nextBrushID = 0;
+TrenchBroom::Model::Brush *brushes[16384]; // 2 ^ 14, should be enough
+
 namespace TrenchBroom {
     namespace Model {
         const Hit::HitType Brush::BrushHit = Hit::freeHitType();
@@ -378,6 +383,17 @@ namespace TrenchBroom {
                 cleanup();
                 throw;
             }
+
+			// kung foo man: just some dirty testing to see if this works out nicely
+			// i dont want C++ pointers in julia, so I give every shitty object an ID
+			// e.g. brush id 322 and face id 3... this is enough information to address it and fits in 2 16bits, one integer
+			if (nextBrushID > 16000) {
+				nextBrushID = 0; // todo: find freed id... and make a nice class for this, brushids->nextBrushID() or something
+				DebugBreak();
+			}
+			id = nextBrushID++;
+			brushes[id] = this;
+
         }
 
         Brush::~Brush() {

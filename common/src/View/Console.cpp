@@ -232,7 +232,7 @@ CCALL void testbrush() {
 		juliaPrint("frame\n");
 		auto brushes = frame->document()->selectedNodes().brushes();
 		for (auto brush : brushes) {
-			print("brush %d has faceCount=%d\n", brush, brush->faceCount());
+			print("brush %d has faceCount=%d\n", brush->id, brush->faceCount());
 		}
 
 		

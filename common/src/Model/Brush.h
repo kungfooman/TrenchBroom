@@ -74,6 +74,7 @@ namespace TrenchBroom {
         public:
             Brush(const BBox3& worldBounds, const BrushFaceList& faces);
             ~Brush() override;
+			int id;
         private:
             void cleanup();
         public:
