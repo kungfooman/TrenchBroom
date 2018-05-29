@@ -2,7 +2,7 @@ type Brush
 	id::Int
 end
 
-selectedBrushesCount() = ccall( :selectedBrushesCount, Int, ())
+selectedBrushesCount() = ccall( :ffi_selected_brushes_count, Int, ())
 
 ffi_free(ptr) = ccall(:ffi_free, Void, (Ptr{Void},), ptr)
 
@@ -12,7 +12,7 @@ rotate(brush::Brush, roll, pitch, yaw) = ccall( :ffi_brush_rotate, Bool, (Int32,
 
 
 function selectedBrushes()::Array{Brush}
-	ptrlist = ccall( :selectedBrushes, Ptr{Int}, ())
+	ptrlist = ccall( :ffi_selected_brushes, Ptr{Int}, ())
 	n = selectedBrushesCount()
 	brushes = Array{Brush}(n)
 	for i in 1:n
