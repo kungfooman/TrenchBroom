@@ -270,9 +270,10 @@ CCALL int *ffi_selected_brushes() {
 	auto frame = firstMapFrame();
 	if (frame == NULL)
 		return NULL;
-
 	int n = frame->document()->selectedNodes().brushCount();
 	int *ret = (int *)malloc(n * sizeof(int));
+	if (ret == NULL)
+		return NULL;
 	auto &brushes = frame->document()->selectedNodes().brushes();
 	for (int i=0; i<n; i++)
 		ret[i] = brushes[i]->id;
@@ -303,6 +304,7 @@ CCALL bool ffi_brush_rotate(int id, float roll, float pitch, float yaw) {
 	auto rot = rotationMatrix(roll, pitch, yaw);
 	auto bounds = BBox3(16384);
 	brush->transform(rot, true, bounds);
+	return true;
 }
 
 class LibJulia {
