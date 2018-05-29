@@ -253,7 +253,11 @@ CCALL MapFrame *firstMapFrame() {
 		return NULL;
 	return frames.front();
 }
+CCALL MapDocumentSPtr getDocument() {
+	return firstMapFrame()->document();
+}
 
+// selectedBrushesCount() = ccall( :selectedBrushesCount, Int, ())
 CCALL int selectedBrushesCount() {
 	auto frame = firstMapFrame();
 	if (frame == NULL)
@@ -282,6 +286,51 @@ CCALL int *selectedBrushes() {
 	for (int i=0; i<n; i++)
 		ret[i] = brushes[i]->id;
 	return ret;
+}
+
+using namespace TrenchBroom::Model;
+extern TrenchBroom::Model::Brush *brushes[16384]; // 2 ^ 14, should be enough
+
+#include <Notifier.h>
+#include <Renderer/MapRenderer.h>
+#include <View/RenderView.h>
+#include <View/SwitchableMapViewContainer.h>
+#include <Renderer/MapRenderer.h>
+
+using namespace TrenchBroom;
+
+// rotate(brush::Brush, roll, pitch, yaw) = ccall( :ffi_brush_rotate, Bool, (Int32, Float32, Float32, Float32), brush.id, roll, pitch, yaw)
+CCALL bool ffi_brush_rotate(int id, float roll, float pitch, float yaw) {
+	auto doc = getDocument();
+
+	//MapDocumentSPtr document = lock(doc);
+
+	Brush *brush = brushes[id];
+	if (brushes[id] == NULL)
+		return false;
+	//auto mat = new Mat4x4();
+	auto rot = rotationMatrix(roll, pitch, yaw);
+
+	auto bounds = BBox3(16384);
+	brush->transform(rot, true, bounds);
+
+	//Notifier1<const Model::NodeList&>::NotifyBeforeAndAfter notifyParents(&(doc->nodesWillChangeNotifier), nodesDidChangeNotifier, doc->selectedNodes());
+
+	doc->invalidateSelectionBounds();
+
+	//doc->r
+	//
+	////invalidateRenderers(Renderer_Selection);
+	//invalidateEntityLinkRenderer();
+	//
+	//
+	
+	firstMapFrame()->m_mapView->m_mapRenderer->invalidateRenderers(Renderer::MapRenderer::Renderer::Renderer_Selection);
+	firstMapFrame()->m_mapView->m_mapRenderer->invalidateEntityLinkRenderer();
+	firstMapFrame()->m_mapView->Refresh();
+	
+
+	//rebuildGeometry
 }
 
 class LibJulia {

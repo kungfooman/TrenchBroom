@@ -69,7 +69,7 @@ namespace TrenchBroom {
             void restoreSelectionColors();
         public: // rendering
             void render(RenderContext& renderContext, RenderBatch& renderBatch);
-        private:
+        public:
             void commitPendingChanges();
             void setupGL(RenderBatch& renderBatch);
             void renderDefaultOpaque(RenderContext& renderContext, RenderBatch& renderBatch);

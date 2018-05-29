@@ -54,7 +54,7 @@ namespace TrenchBroom {
         class FaceTool;
         
         class SwitchableMapViewContainer : public wxPanel, public MapView {
-        private:
+        public:
             Logger* m_logger;
             MapDocumentWPtr m_document;
             GLContextManager& m_contextManager;

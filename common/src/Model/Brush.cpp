@@ -37,7 +37,7 @@
 #include <Windows.h>
 
 int nextBrushID = 0;
-TrenchBroom::Model::Brush *brushes[16384]; // 2 ^ 14, should be enough
+TrenchBroom::Model::Brush *brushes[16384] = {NULL}; // 2 ^ 14, should be enough
 
 namespace TrenchBroom {
     namespace Model {
@@ -1355,7 +1355,7 @@ namespace TrenchBroom {
         }
 
         void Brush::doTransform(const Mat4x4& transformation, bool lockTextures, const BBox3& worldBounds) {
-            const NotifyNodeChange nodeChange(this);
+            //const NotifyNodeChange nodeChange(this);
 
             for (BrushFace* face : m_faces)
                 face->transform(transformation, lockTextures);

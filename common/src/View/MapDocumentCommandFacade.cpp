@@ -449,14 +449,10 @@ namespace TrenchBroom {
           const Model::NodeList &nodes = m_selectedNodes.nodes();
           const Model::NodeList parents = collectParents(nodes);
 
-          Notifier1<const Model::NodeList &>::NotifyBeforeAndAfter
-              notifyParents(nodesWillChangeNotifier, nodesDidChangeNotifier,
-                            parents);
-          Notifier1<const Model::NodeList &>::NotifyBeforeAndAfter notifyNodes(
-              nodesWillChangeNotifier, nodesDidChangeNotifier, nodes);
+          Notifier1<const Model::NodeList &>::NotifyBeforeAndAfter notifyParents(nodesWillChangeNotifier, nodesDidChangeNotifier, parents);
+          Notifier1<const Model::NodeList &>::NotifyBeforeAndAfter notifyNodes(nodesWillChangeNotifier, nodesDidChangeNotifier, nodes);
 
-          Model::TransformObjectVisitor visitor(transform, lockTextures,
-                                                m_worldBounds);
+          Model::TransformObjectVisitor visitor(transform, lockTextures, m_worldBounds);
           Model::Node::accept(std::begin(nodes), std::end(nodes), visitor);
 
           invalidateSelectionBounds();

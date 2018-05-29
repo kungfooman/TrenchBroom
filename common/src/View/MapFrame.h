@@ -53,7 +53,7 @@ namespace TrenchBroom {
         class SwitchableMapViewContainer;
 
         class MapFrame : public wxFrame {
-        private:
+        public:
             FrameManager* m_frameManager;
             MapDocumentSPtr m_document;
 

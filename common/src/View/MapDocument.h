@@ -231,10 +231,9 @@ namespace TrenchBroom {
             void deselect(Model::Node* node) override;
             void deselect(const Model::NodeList& nodes) override;
             void deselect(Model::BrushFace* face) override;
-        protected:
+        public:
             void updateLastSelectionBounds();
             void invalidateSelectionBounds();
-        private:
             void validateSelectionBounds() const;
             void clearSelection();
         public: // adding, removing, reparenting, and duplicating nodes, declared in MapFacade interface
