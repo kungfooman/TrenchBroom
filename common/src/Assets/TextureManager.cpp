@@ -29,6 +29,9 @@
 #include <algorithm>
 #include <iterator>
 
+int nextTextureManagerID = 0;
+TrenchBroom::Assets::TextureManager *textureManagers[16] = {NULL};
+
 namespace TrenchBroom {
     namespace Assets {
         class CompareByName {
@@ -52,7 +55,9 @@ namespace TrenchBroom {
         m_logger(logger),
         m_minFilter(minFilter),
         m_magFilter(magFilter),
-        m_resetTextureMode(false) {}
+        m_resetTextureMode(false) {
+			textureManagers[nextTextureManagerID++] = this;
+		}
         
         TextureManager::~TextureManager() {
             clear();
