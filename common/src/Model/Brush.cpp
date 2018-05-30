@@ -1355,7 +1355,7 @@ namespace TrenchBroom {
         }
 
         void Brush::doTransform(const Mat4x4& transformation, bool lockTextures, const BBox3& worldBounds) {
-            //const NotifyNodeChange nodeChange(this);
+            const NotifyNodeChange nodeChange(this);
 
             for (BrushFace* face : m_faces)
                 face->transform(transformation, lockTextures);
