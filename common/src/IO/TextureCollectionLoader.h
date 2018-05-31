@@ -42,32 +42,27 @@ namespace TrenchBroom {
 
         class TextureCollectionLoader {
         public:
+			int id;
             typedef std::unique_ptr<TextureCollectionLoader> Ptr;
-        protected:
             TextureCollectionLoader();
-        public:
             virtual ~TextureCollectionLoader();
-        public:
             Assets::TextureCollection* loadTextureCollection(const Path& path, const String& textureExtension, const TextureReader& textureReader);
-        private:
             virtual MappedFile::List doFindTextures(const Path& path, const String& extension) = 0;
         };
         
         class FileTextureCollectionLoader : public TextureCollectionLoader {
-        private:
-            const Path::List m_searchPaths;
         public:
+			int id;
+            const Path::List m_searchPaths;
             FileTextureCollectionLoader(const Path::List& searchPaths);
-        private:
             MappedFile::List doFindTextures(const Path& path, const String& extension) override;
         };
         
         class DirectoryTextureCollectionLoader : public TextureCollectionLoader {
-        private:
-            const FileSystem& m_gameFS;
         public:
+			int id;
+            const FileSystem& m_gameFS;
             DirectoryTextureCollectionLoader(const FileSystem& gameFS);
-        private:
             MappedFile::List doFindTextures(const Path& path, const String& extension) override;
         };
     }

@@ -56,6 +56,28 @@ namespace TrenchBroom {
         void WadFileSystem::doReadDirectory() {
             CharArrayReader reader(m_file->begin(), m_file->end());
 
+
+			auto why = m_file->begin();
+
+			if (strcmp(why, "WHY") == 0) {
+				auto path = IO::Path("hurr.jpg");
+				const char *foo = "foo";
+
+
+				FILE *f = fopen("C:\\Users\\kung\\Desktop\\cc0 images\\flower-pink-daisy_powerscaled.jpg", "rb");
+				assert(f);
+				fseek(f, 0, SEEK_END);
+				long length = ftell(f);
+				fseek(f, 0, SEEK_SET);
+				char *buffer = (char *) malloc(length);
+				fread(buffer, 1, length, f);
+				fclose(f);
+
+                MappedFile::Ptr file(new MappedFileView(m_file, path, buffer, buffer + length));
+				m_root.addFile(path, file);
+				return;
+			}
+
             reader.seekFromBegin(WadLayout::NumEntriesAddress);
             const size_t entryCount = reader.readSize<int32_t>();
             

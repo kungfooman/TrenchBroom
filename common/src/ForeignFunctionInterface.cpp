@@ -166,3 +166,66 @@ CCALL bool ffi_add_texture_folder(const char *folder) {
 }
 
 
+// includes ripped from TextureCollectionLoader.cpp
+#include "IO/TextureCollectionLoader.h"
+#include "Assets/AssetTypes.h"
+#include "Assets/TextureCollection.h"
+#include "Assets/TextureManager.h"
+#include "IO/DiskIO.h"
+#include "IO/FileMatcher.h"
+#include "IO/FileSystem.h"
+#include "IO/TextureReader.h"
+#include "IO/WadFileSystem.h"
+#include <algorithm>
+#include <cassert>
+#include <iterator>
+#include <memory>
+#include <IO/FreeImageTextureReader.h>
+#include <IO/TextureReader.h>
+
+#include <Assets/Texture.h>
+
+extern TrenchBroom::IO::TextureCollectionLoader *textureCollectionLoaders[32];
+
+#include "Assets/Texture.h"
+#include "Assets/ImageUtils.h"
+#include "Assets/TextureCollection.h"
+
+extern int nextTextureCollectionID;
+extern TrenchBroom::Assets::TextureCollection *textureCollections[256];
+
+extern TrenchBroom::Assets::TextureManager *textureManagers[32];
+
+// ccall( :ffi_add_texture, Bool, ())
+CCALL bool ffi_add_texture(/*int texture_collection_loader_id, int texture_collection_id*/) {
+	auto texreader = new IO::FreeImageTextureReader(IO::TextureReader::TextureNameStrategy());
+	auto texpath = IO::Path("zzz.jpg");
+
+	FILE *f = fopen("C:\\Users\\kung\\Desktop\\cc0 images\\flower-pink-daisy_powerscaled.jpg", "rb");
+	assert(f);
+	fseek(f, 0, SEEK_END);
+	long length = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	char *buffer = (char *) malloc(length);
+	fread(buffer, 1, length, f);
+	fclose(f);
+
+	TrenchBroom::Assets::Texture *tex = texreader->readTexture(buffer, buffer+length, texpath);
+
+	/*
+		probably should use the preference, but idc atm
+            PreferenceManager& prefs = PreferenceManager::instance();
+            prefs.set(Preferences::TextureMinFilter, minFilter);
+            prefs.set(Preferences::TextureMagFilter, magFilter);
+	*/
+	int texid;
+	TrenchBroom::glGenTextures((TrenchBroom::GLsizei) 1, (TrenchBroom::GLuint *)&texid);
+	tex->prepare(texid, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR);
+
+	textureCollections[1]->addTexture(tex);
+
+	textureManagers[0]->prepare();
+	textureManagers[0]->updateTextures();
+
+	return true;
+}

@@ -52,11 +52,16 @@
 
 #include <cstdio>
 
+int nextGameImplementationID = 0;
+TrenchBroom::Model::GameImpl *gameImplementations[32] = {NULL};
+
 namespace TrenchBroom {
     namespace Model {
         GameImpl::GameImpl(GameConfig& config, const IO::Path& gamePath, Logger* logger) :
         m_config(config),
         m_gamePath(gamePath) {
+			id = nextGameImplementationID++;
+			gameImplementations[id] = this;
             initializeFileSystem(logger);
         }
         
@@ -209,7 +214,9 @@ namespace TrenchBroom {
 
         void GameImpl::doLoadTextureCollections(AttributableNode* node, const IO::Path& documentPath, Assets::TextureManager& textureManager) const {
             const AttributableNodeVariableStore variables(node);
-            const IO::Path::List paths = extractTextureCollections(node);
+            IO::Path::List paths = extractTextureCollections(node);
+
+			paths.push_back(IO::Path("C:\\Users\\kung\\Desktop\\fte\\Quake v1.08 (1996)(Id Software)\\fake.pk3\\"));
 
             const IO::Path::List fileSearchPaths = textureCollectionSearchPaths(documentPath);
             IO::TextureLoader textureLoader(variables, m_gameFS, fileSearchPaths, m_config.textureConfig());

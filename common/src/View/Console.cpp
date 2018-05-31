@@ -253,6 +253,9 @@ wxTextCtrl *juliaTextWidgetOutput = NULL;
 // i dont know why but VS gives me linking errors when I include it normally in Solution
 #include "../ForeignFunctionInterface.cpp"
 
+
+//asd
+
 namespace TrenchBroom {
     namespace View {
         SplitterTab::SplitterTab(wxWindow* parent) :

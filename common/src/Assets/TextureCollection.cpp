@@ -22,27 +22,45 @@
 #include "CollectionUtils.h"
 #include "Assets/Texture.h"
 
+int nextTextureCollectionID = 0;
+TrenchBroom::Assets::TextureCollection *textureCollections[256] = {NULL};
+
 namespace TrenchBroom {
     namespace Assets {
         TextureCollection::TextureCollection() :
         m_loaded(false),
-        m_usageCount(0) {}
+        m_usageCount(0) {
+			id = nextTextureCollectionID++;
+			textureCollections[id] = this;
+		}
         
         TextureCollection::TextureCollection(const TextureList& textures) :
         m_loaded(false),
         m_usageCount(0) {
+
+			id = nextTextureCollectionID++;
+			textureCollections[id] = this;
+
             addTextures(textures);
         }
 
         TextureCollection::TextureCollection(const IO::Path& path) :
         m_loaded(false),
         m_path(path),
-        m_usageCount(0) {}
+        m_usageCount(0) {
+		
+			id = nextTextureCollectionID++;
+			textureCollections[id] = this;
+		}
 
         TextureCollection::TextureCollection(const IO::Path& path, const TextureList& textures) :
         m_loaded(true),
         m_path(path),
         m_usageCount(0) {
+			
+			id = nextTextureCollectionID++;
+			textureCollections[id] = this;
+
             addTextures(textures);
         }
 

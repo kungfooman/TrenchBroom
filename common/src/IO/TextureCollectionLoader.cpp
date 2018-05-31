@@ -32,16 +32,24 @@
 #include <cassert>
 #include <iterator>
 #include <memory>
+#include <IO/FreeImageTextureReader.h>
+#include <IO/TextureReader.h>
+
+int nextTextureCollectionLoaderID = 0;
+TrenchBroom::IO::TextureCollectionLoader *textureCollectionLoaders[32] = {NULL};
 
 namespace TrenchBroom {
     namespace IO {
-        TextureCollectionLoader::TextureCollectionLoader() {}
+        TextureCollectionLoader::TextureCollectionLoader() {
+			id = nextTextureCollectionLoaderID++;
+			textureCollectionLoaders[id] = this;
+		}
         TextureCollectionLoader::~TextureCollectionLoader() {}
 
         Assets::TextureCollection* TextureCollectionLoader::loadTextureCollection(const Path& path, const String& textureExtension, const TextureReader& textureReader) {
             std::unique_ptr<Assets::TextureCollection> collection(new Assets::TextureCollection(path));
-            
-            for (MappedFile::Ptr file : doFindTextures(path, textureExtension)) {
+            auto files = doFindTextures(path, textureExtension);
+            for (MappedFile::Ptr file : files) {
                 Assets::Texture* texture = textureReader.readTexture(file->begin(), file->end(), file->path());
                 collection->addTexture(texture);
             }

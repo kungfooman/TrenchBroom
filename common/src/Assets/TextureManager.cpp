@@ -30,7 +30,7 @@
 #include <iterator>
 
 int nextTextureManagerID = 0;
-TrenchBroom::Assets::TextureManager *textureManagers[16] = {NULL};
+TrenchBroom::Assets::TextureManager *textureManagers[32] = {NULL};
 
 namespace TrenchBroom {
     namespace Assets {
@@ -56,7 +56,8 @@ namespace TrenchBroom {
         m_minFilter(minFilter),
         m_magFilter(magFilter),
         m_resetTextureMode(false) {
-			textureManagers[nextTextureManagerID++] = this;
+			id = nextTextureManagerID++;
+			textureManagers[id] = this;
 		}
         
         TextureManager::~TextureManager() {
