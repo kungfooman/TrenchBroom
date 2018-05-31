@@ -216,7 +216,7 @@ namespace TrenchBroom {
             const AttributableNodeVariableStore variables(node);
             IO::Path::List paths = extractTextureCollections(node);
 
-			paths.push_back(IO::Path("C:\\Users\\kung\\Desktop\\fte\\Quake v1.08 (1996)(Id Software)\\fake.pk3\\"));
+			//paths.push_back(IO::Path("C:\\Users\\kung\\Desktop\\fte\\Quake v1.08 (1996)(Id Software)\\fake.pk3\\"));
 
             const IO::Path::List fileSearchPaths = textureCollectionSearchPaths(documentPath);
             IO::TextureLoader textureLoader(variables, m_gameFS, fileSearchPaths, m_config.textureConfig());

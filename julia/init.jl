@@ -10,7 +10,7 @@ imgui_log = juliaPrint # just compatibility to my console.jl
 include("console.jl")
 include("brushes.jl")
 include("texturemanager.jl")
-include("texturecollection.jl")
+include("TextureCollection.jl")
 include("TextureBrowserView.jl")
 
 log(console, "Loading init.jl")

@@ -3,6 +3,9 @@ type TextureCollection
 	function TextureCollection(name::AbstractString)
 		new( ccall( :ffi_new_texture_collection, Int, (Cstring,), name) )
 	end
+	function TextureCollection(id::Int)
+		new( id )
+	end
 end
 
 function addTexture(texture_collection::TextureCollection, filename, basename)
