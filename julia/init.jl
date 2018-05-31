@@ -1,4 +1,7 @@
 importall Base
+using Glob
+
+filename(path) = splitext(path)[1]
 
 juliaPrint(text) = ccall( :ffi_julia_print, Void, (Cstring,), text)
 
@@ -7,6 +10,7 @@ imgui_log = juliaPrint # just compatibility to my console.jl
 include("console.jl")
 include("brushes.jl")
 include("texturemanager.jl")
+include("texturecollection.jl")
 
 log(console, "Loading init.jl")
 

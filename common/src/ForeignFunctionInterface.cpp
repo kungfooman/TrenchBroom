@@ -197,15 +197,15 @@ extern TrenchBroom::Assets::TextureCollection *textureCollections[256];
 extern TrenchBroom::Assets::TextureManager *textureManagers[32];
 
 /*
-addTexture(filename, basename) = ccall( :ffi_add_texture, Bool, (Cstring, Cstring), filename, basename)
-using Glob
-Glob.glob("*", ".")
 filenames = Glob.glob("*.jpg", "C:/xampp/htdocs/WebFiles/libwebgame/textures/concrete")
-for filename in filenames
-	addTexture(filename)
+
+customCollection = TextureCollection("custom2")
+
+for tmp in filenames
+	addTexture(customCollection, tmp, filename(tmp))
 end
 */
-CCALL bool ffi_add_texture(/*int texture_collection_loader_id, int texture_collection_id*/ char *filename, char *basename) {
+CCALL bool ffi_add_texture(int texture_collection_id, char *filename, char *basename) {
 	auto texreader = new IO::FreeImageTextureReader(IO::TextureReader::TextureNameStrategy());
 	//auto texpath = IO::Path("zzz.jpg");
 	auto texpath = IO::Path(basename);
@@ -236,10 +236,18 @@ CCALL bool ffi_add_texture(/*int texture_collection_loader_id, int texture_colle
 	TrenchBroom::glGenTextures((TrenchBroom::GLsizei) 1, (TrenchBroom::GLuint *)&texid);
 	tex->prepare(texid, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR);
 
-	textureCollections[1]->addTexture(tex);
+	textureCollections[texture_collection_id]->addTexture(tex);
 
 	textureManagers[0]->prepare();
 	textureManagers[0]->updateTextures();
 
 	return true;
+}
+
+// ccall( :ffi_new_texture_collection, Int, (Cstring,), "some test name")
+CCALL int ffi_new_texture_collection(char *name) {
+	auto path = TrenchBroom::IO::Path(name);
+	auto textureCollection = new TrenchBroom::Assets::TextureCollection(path);
+	textureManagers[0]->addTextureCollection(textureCollection);
+	return textureCollection->id;
 }
