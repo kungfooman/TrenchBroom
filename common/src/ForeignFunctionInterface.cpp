@@ -196,22 +196,36 @@ extern TrenchBroom::Assets::TextureCollection *textureCollections[256];
 
 extern TrenchBroom::Assets::TextureManager *textureManagers[32];
 
-// ccall( :ffi_add_texture, Bool, ())
-CCALL bool ffi_add_texture(/*int texture_collection_loader_id, int texture_collection_id*/) {
+/*
+addTexture(filename, basename) = ccall( :ffi_add_texture, Bool, (Cstring, Cstring), filename, basename)
+using Glob
+Glob.glob("*", ".")
+filenames = Glob.glob("*.jpg", "C:/xampp/htdocs/WebFiles/libwebgame/textures/concrete")
+for filename in filenames
+	addTexture(filename)
+end
+*/
+CCALL bool ffi_add_texture(/*int texture_collection_loader_id, int texture_collection_id*/ char *filename, char *basename) {
 	auto texreader = new IO::FreeImageTextureReader(IO::TextureReader::TextureNameStrategy());
-	auto texpath = IO::Path("zzz.jpg");
+	//auto texpath = IO::Path("zzz.jpg");
+	auto texpath = IO::Path(basename);
 
-	FILE *f = fopen("C:\\Users\\kung\\Desktop\\cc0 images\\flower-pink-daisy_powerscaled.jpg", "rb");
+	//FILE *f = fopen("C:\\Users\\kung\\Desktop\\cc0 images\\flower-pink-daisy_powerscaled.jpg", "rb");
+	FILE *f = fopen(filename, "rb");
+	if (f == NULL)
+		return false;
 	assert(f);
 	fseek(f, 0, SEEK_END);
 	long length = ftell(f);
 	fseek(f, 0, SEEK_SET);
 	char *buffer = (char *) malloc(length);
+	if (buffer == NULL)
+		return false;
 	fread(buffer, 1, length, f);
 	fclose(f);
 
 	TrenchBroom::Assets::Texture *tex = texreader->readTexture(buffer, buffer+length, texpath);
-
+	free(buffer);
 	/*
 		probably should use the preference, but idc atm
             PreferenceManager& prefs = PreferenceManager::instance();
