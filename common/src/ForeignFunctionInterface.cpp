@@ -199,7 +199,7 @@ extern TrenchBroom::Assets::TextureManager *textureManagers[32];
 /*
 filenames = Glob.glob("*.jpg", "C:/xampp/htdocs/WebFiles/libwebgame/textures/concrete")
 
-customCollection = TextureCollection("custom2")
+customCollection = TextureCollection("custom")
 
 for tmp in filenames
 	addTexture(customCollection, tmp, filename(tmp))
@@ -250,4 +250,16 @@ CCALL int ffi_new_texture_collection(char *name) {
 	auto textureCollection = new TrenchBroom::Assets::TextureCollection(path);
 	textureManagers[0]->addTextureCollection(textureCollection);
 	return textureCollection->id;
+}
+
+
+#include "View/TextureBrowserView.h"
+
+extern int nextTextureBrowserViewID;
+extern TrenchBroom::View::TextureBrowserView *textureBrowserViews[32];
+
+// triggers a refresh
+// ccall( :ffi_TextureBrowserView_usageCountDidChange, Void, (Int,), 0)
+CCALL void ffi_TextureBrowserView_usageCountDidChange(int id) {
+	textureBrowserViews[id]->usageCountDidChange();
 }

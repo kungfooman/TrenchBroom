@@ -46,7 +46,6 @@ namespace TrenchBroom {
         public:
             Assets::Texture* texture;
             Renderer::FontDescriptor fontDescriptor;
-            
             TextureCellData(Assets::Texture* i_texture, const Renderer::FontDescriptor& i_fontDescriptor);
         };
 
@@ -56,55 +55,42 @@ namespace TrenchBroom {
                 SO_Name,
                 SO_Usage
             } SortOrder;
-        private:
+			int id;
             typedef Renderer::VertexSpecs::P2T2C4::Vertex TextVertex;
             typedef std::map<Renderer::FontDescriptor, TextVertex::List> StringMap;
-
             Assets::TextureManager& m_textureManager;
-
             bool m_group;
             bool m_hideUnused;
             SortOrder m_sortOrder;
             String m_filterText;
-            
             Assets::Texture* m_selectedTexture;
-        public:
             TextureBrowserView(wxWindow* parent,
                                wxScrollBar* scrollBar,
                                GLContextManager& contextManager,
                                Assets::TextureManager& textureManager);
             ~TextureBrowserView() override;
-
             void setSortOrder(SortOrder sortOrder);
             void setGroup(bool group);
             void setHideUnused(bool hideUnused);
             void setFilterText(const String& filterText);
-
             Assets::Texture* selectedTexture() const;
             void setSelectedTexture(Assets::Texture* selectedTexture);
-        private:
             void usageCountDidChange();
-
             void doInitLayout(Layout& layout) override;
             void doReloadLayout(Layout& layout) override;
             void addTextureToLayout(Layout& layout, Assets::Texture* texture, const Renderer::FontDescriptor& font);
-            
             struct CompareByUsageCount;
             struct CompareByName;
             struct MatchUsageCount;
             struct MatchName;
-            
             Assets::TextureCollectionList getCollections() const;
             Assets::TextureList getTextures(const Assets::TextureCollection* collection) const;
             Assets::TextureList getTextures() const;
-            
             void filterTextures(Assets::TextureList& textures) const;
             void sortTextures(Assets::TextureList& textures) const;
-            
             void doClear() override;
             void doRender(Layout& layout, float y, float height) override;
             bool doShouldRenderFocusIndicator() const override;
-            
             void renderBounds(Layout& layout, float y, float height);
             const Color& textureColor(const Assets::Texture& texture) const;
             void renderTextures(Layout& layout, float y, float height);
@@ -112,7 +98,6 @@ namespace TrenchBroom {
             void renderGroupTitleBackgrounds(Layout& layout, float y, float height);
             void renderStrings(Layout& layout, float y, float height);
             StringMap collectStringVertices(Layout& layout, float y, float height);
-            
             void doLeftClick(Layout& layout, float x, float y) override;
             wxString tooltip(const Layout::Group::Row::Cell& cell) override;
         };

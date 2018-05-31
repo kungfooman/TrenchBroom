@@ -11,6 +11,7 @@ include("console.jl")
 include("brushes.jl")
 include("texturemanager.jl")
 include("texturecollection.jl")
+include("TextureBrowserView.jl")
 
 log(console, "Loading init.jl")
 
@@ -35,5 +36,9 @@ function eval_and_prettyprint(code::AbstractString)
 		log(console, ans)
 	catch ex
 		log(console, ex)
+	end
+	
+	try
+		usageCountDidChange(TextureBrowserView(0))
 	end
 end

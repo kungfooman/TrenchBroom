@@ -31,6 +31,9 @@
 #include "Renderer/VertexArray.h"
 #include "View/TextureSelectedCommand.h"
 
+int nextTextureBrowserViewID = 0;
+TrenchBroom::View::TextureBrowserView *textureBrowserViews[32] = {NULL};
+
 namespace TrenchBroom {
     namespace View {
         TextureCellData::TextureCellData(Assets::Texture* i_texture, const Renderer::FontDescriptor& i_fontDescriptor) :
@@ -47,6 +50,9 @@ namespace TrenchBroom {
         m_hideUnused(false),
         m_sortOrder(SO_Name),
         m_selectedTexture(nullptr) {
+			id = nextTextureBrowserViewID++;
+			textureBrowserViews[id] = this;
+
             m_textureManager.usageCountDidChange.addObserver(this, &TextureBrowserView::usageCountDidChange);
         }
         
