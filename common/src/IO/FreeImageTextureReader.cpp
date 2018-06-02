@@ -40,7 +40,8 @@ namespace TrenchBroom {
             const FREE_IMAGE_FORMAT     imageFormat     = FreeImage_GetFileTypeFromMemory(imageMemory);
             FIBITMAP*                   image           = FreeImage_LoadFromMemory(imageFormat, imageMemory);
 
-            const String                imageName       = path.filename();
+            //const String                imageName       = path.filename();
+			const String                imageName       = path.asString('/');
             const size_t                imageWidth      = static_cast<size_t>(FreeImage_GetWidth(image));
             const size_t                imageHeight     = static_cast<size_t>(FreeImage_GetHeight(image));
             const FREE_IMAGE_COLOR_TYPE imageColourType = FreeImage_GetColorType(image);
