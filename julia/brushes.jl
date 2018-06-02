@@ -2,6 +2,18 @@ type Brush
 	id::Int
 end
 
+type BrushFace
+	brush::Brush
+	face_id::Int
+	function BrushFace(brush_id, face_id)
+		brush = Brush(brush_id)
+		if faceCount(brush) < face_id
+			throw( ArgumentError("brush doesnt have so many faces") ) 
+		end
+		return new(brush, face_id)
+	end
+end
+
 selectedBrushesCount() = ccall( :ffi_selected_brushes_count, Int, ())
 
 ffi_free(ptr) = ccall(:ffi_free, Void, (Ptr{Void},), ptr)
@@ -23,3 +35,24 @@ function selectedBrushes()::Array{Brush}
 	return brushes
 end
 
+function faceCount(brush::Brush)
+	ccall( :ffi_Brush_faceCount, Int, (Int,), brush.id)
+end
+
+face_get_texture_name(brush_id, face_id) = ccall( :ffi_face_get_texture_name, Ptr{Cchar}, (Int, Int), brush_id, face_id)
+
+function textureName(brushFace::BrushFace)::String
+	cstr = face_get_texture_name(brushFace.brush.id, brushFace.face_id)
+	if cstr == C_NULL
+		return "NULL"
+	end
+	return unsafe_string( cstr )
+end
+
+if false
+	brushFace = BrushFace(0,0)
+	textureName( brushFace )
+	
+	faceCount(Brush(0))
+	BrushFace(0,20)
+end

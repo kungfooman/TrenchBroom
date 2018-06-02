@@ -284,3 +284,17 @@ CCALL int ffi_find_texture(const char *name) {
 CCALL void *ffi_get_texture_pointer_by_id(int id) {
 	return (void *)textures[id];
 }
+
+// ffi_Brush_faceCount(brush_id) = ccall( :ffi_brush_faceCount, Int, (Int,), brush_id)
+CCALL int ffi_Brush_faceCount(int brush_id) {
+	auto brush = brushes[brush_id];
+	return brush->faceCount();
+}
+
+// face_get_texture_name(brush_id, face_id) = ccall( :ffi_face_get_texture_name, Ptr{Cchar}, (Int, Int), brush_id, face_id)
+CCALL const char *ffi_face_get_texture_name(int brush_id, int face_id) {
+	auto brush = brushes[brush_id];
+	auto faces = brush->faces();
+	auto face = faces.at(face_id);
+	return face->textureName().c_str();
+}
