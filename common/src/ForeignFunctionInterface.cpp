@@ -279,3 +279,8 @@ CCALL int ffi_find_texture(const char *name) {
 	}
 	return -1;
 }
+
+// get_texture_pointer_by_id(id) = ccall( :ffi_get_texture_pointer_by_id, Ptr{Void}, (Int,), id)
+CCALL void *ffi_get_texture_pointer_by_id(int id) {
+	return (void *)textures[id];
+}

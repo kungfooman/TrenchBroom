@@ -11,6 +11,10 @@ function find_texture(name)
 	return Texture(id)
 end
 
+pointer(texture::Texture) = ccall( :ffi_get_texture_pointer_by_id, Ptr{Void}, (Int,), texture.id)
+
+
 if false
-	find_texture("concrete/white")
+	texture = find_texture("concrete/white")
+	pointer( texture )
 end
