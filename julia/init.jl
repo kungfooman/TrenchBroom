@@ -20,6 +20,7 @@ try
 	include("removeExtension.jl")
 	include("libwebgame.jl")
 	include("php.jl")
+	include("assignMapTextures.jl")
 catch ex
 	log(console, ex)
 end

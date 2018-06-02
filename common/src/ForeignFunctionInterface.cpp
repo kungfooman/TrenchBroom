@@ -146,6 +146,7 @@ CCALL void ffi_update_views() {
 	auto doc = getDocument();
 	doc->invalidateSelectionBounds();
 	firstMapFrame()->m_mapView->m_mapRenderer->invalidateRenderers(Renderer::MapRenderer::Renderer::Renderer_Selection);
+	firstMapFrame()->m_mapView->m_mapRenderer->updateRenderers(Renderer::MapRenderer::Renderer::Renderer_All); // for changes to brush faces 
 	firstMapFrame()->m_mapView->m_mapRenderer->invalidateEntityLinkRenderer();
 	firstMapFrame()->m_mapView->Refresh();
 }
