@@ -56,3 +56,20 @@ if false
 	faceCount(Brush(0))
 	BrushFace(0,20)
 end
+
+function setTexture(brushFace::BrushFace, texture::Texture)
+	brush_id = brushFace.brush.id
+	face_id = brushFace.face_id
+	texture_id = texture.id
+	ccall( :ffi_brushface_set_texture, Void, (Int, Int, Int), brush_id, face_id, texture_id)
+end
+
+if false
+	setTexture( BrushFace(0,0), Texture(4) )
+	texname = textureName(BrushFace(0,0))
+	find_texture( texname )
+	
+	for i in 0:5
+		setTexture( BrushFace(2,i), Texture(4) )
+	end
+end

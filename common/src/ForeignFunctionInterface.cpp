@@ -140,6 +140,7 @@ CCALL int ffi_selected_brushes_count() {
 	return frame->document()->selectedNodes().brushCount();
 }
 
+// update_views() = ccall( :ffi_update_views, Void, ())
 CCALL void ffi_update_views() {
 	//Notifier1<const Model::NodeList&>::NotifyBeforeAndAfter notifyParents(&(doc->nodesWillChangeNotifier), nodesDidChangeNotifier, doc->selectedNodes());
 	auto doc = getDocument();
@@ -297,4 +298,13 @@ CCALL const char *ffi_face_get_texture_name(int brush_id, int face_id) {
 	auto faces = brush->faces();
 	auto face = faces.at(face_id);
 	return face->textureName().c_str();
+}
+
+// ccall( :ffi_brushface_set_texture, Void, (Int, Int, Int), brush_id, face_id, texture_id)
+CCALL void ffi_brushface_set_texture(int brush_id, int face_id, int texture_id) {
+	auto brush = brushes[brush_id];
+	auto faces = brush->faces();
+	auto face = faces.at(face_id);
+	face->setTexture(textures[texture_id]);
+	face->updateTexture(textureManagers[0]);
 }
