@@ -36,48 +36,37 @@ namespace TrenchBroom {
         void setMipBufferSize(TextureBuffer::List& buffers, const size_t width, const size_t height);
         
         class Texture {
-        private:
+        public:
+			int id;
             TextureCollection* m_collection;
             String m_name;
-            
             size_t m_width;
             size_t m_height;
             Color m_averageColor;
-
             size_t m_usageCount;
             bool m_overridden;
-
             GLenum m_format;
-
             mutable GLuint m_textureId;
             mutable TextureBuffer::List m_buffers;
-        public:
             Texture(const String& name, const size_t width, const size_t height, const Color& averageColor, const TextureBuffer& buffer, GLenum format = GL_RGB);
             Texture(const String& name, const size_t width, const size_t height, const Color& averageColor, const TextureBuffer::List& buffers, GLenum format = GL_RGB);
             Texture(const String& name, const size_t width, const size_t height, GLenum format = GL_RGB);
             ~Texture();
-
             const String& name() const;
-            
             size_t width() const;
             size_t height() const;
             const Color& averageColor() const;
-
             size_t usageCount() const;
             void incUsageCount();
             void decUsageCount();
             bool overridden() const;
             void setOverridden(const bool overridden);
-
             bool isPrepared() const;
             void prepare(GLuint textureId, int minFilter, int magFilter);
             void setMode(int minFilter, int magFilter);
-
             void activate() const;
             void deactivate() const;
-        private:
             void setCollection(TextureCollection* collection);
-            friend class TextureCollection;
         };
     }
 }

@@ -23,6 +23,9 @@
 
 #include <cassert>
 
+int nextTextureID = 0;
+TrenchBroom::Assets::Texture *textures[1024] = {NULL};
+
 namespace TrenchBroom {
     namespace Assets {
         void setMipBufferSize(Assets::TextureBuffer::List& buffers, const size_t width, const size_t height) {
@@ -48,6 +51,9 @@ namespace TrenchBroom {
             assert(m_height > 0);
             assert(buffer.size() >= m_width * m_height * 3);
             m_buffers.push_back(buffer);
+
+			id = nextTextureID++;
+			textures[id] = this;
         }
         
         Texture::Texture(const String& name, const size_t width, const size_t height, const Color& averageColor, const TextureBuffer::List& buffers, const GLenum format) :
@@ -66,6 +72,10 @@ namespace TrenchBroom {
             for (size_t i = 0; i < m_buffers.size(); ++i) {
                 assert(m_buffers[i].size() >= (m_width * m_height) / ((1 << i) * (1 << i)) * 3);
             }
+
+			
+			id = nextTextureID++;
+			textures[id] = this;
         }
         
         Texture::Texture(const String& name, const size_t width, const size_t height, const GLenum format) :
@@ -77,7 +87,12 @@ namespace TrenchBroom {
         m_usageCount(0),
         m_overridden(false),
         m_format(format),
-        m_textureId(0) {}
+        m_textureId(0) {
+		
+		
+			id = nextTextureID++;
+			textures[id] = this;
+		}
 
         Texture::~Texture() {
             if (m_collection == nullptr && m_textureId != 0)

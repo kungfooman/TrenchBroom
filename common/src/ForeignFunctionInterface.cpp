@@ -263,3 +263,19 @@ extern TrenchBroom::View::TextureBrowserView *textureBrowserViews[32];
 CCALL void ffi_TextureBrowserView_usageCountDidChange(int id) {
 	textureBrowserViews[id]->usageCountDidChange();
 }
+
+
+extern int nextTextureID;
+extern TrenchBroom::Assets::Texture *textures[1024];
+
+// find_texture(name) = ccall( :ffi_find_texture, Int, (Cstring,), name)
+CCALL int ffi_find_texture(const char *name) {
+	for (int i=0; i<1024; i++) {
+		auto texture = textures[i];
+		if (texture == NULL)
+			continue;
+		if (texture->m_name == name)
+			return texture->id;
+	}
+	return -1;
+}
